@@ -152,6 +152,59 @@ class BCECriterion(Criterion):
         return self.grad_inputs
 
 
+class ClassNLLCriterion(Criterion):
+    """
+    """
+    def __init__(self, weights=None):
+        Criterion.__init__(self)
+        self.size_average = True
+        self.output_tensor = Tensor(1)   # fix
+        if weights:
+            assert weights.ndim == 1, 'weights input should be 1-D'
+            self.weights = weights
+
+    def update_output(self, inputs, target):
+        if inputs.ndim == 1:
+            self.output = -inputs
+            if self.weights:
+                self.output = self.output * self.weights
+        elif inputs.ndim == 2:
+            self.output = -inputs
+            if self.weights:
+                self.output = self.output * self.weights
+            if self.size_average:
+                self.output = self.output / len(self.output)
+        else:
+            raise 'inputs should be 1 or 2 dimensional'
+        return self.output
+
+    def update_grad_inputs(self, inputs, target):
+        pass
+
+
+class CosineEmbeddingCriterion(Criterion):
+    """
+    """
+    def __init__(self, margin=0):
+        Criterion.__init__(self)
+        self.margin = margin
+        self.grad_inputs = (Tensor(), Tensor())  # fix
+
+    def update_output(self, inputs, target):
+        self.output = np.cos(inputs)
+        if target == -1:
+            self.output = max([0, self.output - self.margin])
+        else:
+            self.output = 1 - self.output
+        return self.output
+
+    def update_grad_inputs(self, inputs, target):
+        self.grad_inputs = -np.sin(inputs)
+        if target == -1:
+            self.grad_inputs = -self.grad_inputs
+        return self.grad_inputs
+
+
 class MSECriterion(Criterion):
     """mean squared error"""
     def __init__(self):
