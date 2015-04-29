@@ -72,7 +72,7 @@ class Module(object):
         """
         return self.update_output(inputs)
 
-    def backward(self, inputs, grad_output, scale=None):
+    def backward(self, inputs, grad_output, scale=1):
         """Performs a backpropagation step through the module, with
         respect to the given input. In general this method makes the
         assumption forward(input) has been called before, with the same
@@ -96,8 +96,6 @@ class Module(object):
         update_grad_inputs(input, grad_output) and
         acc_grad_params(input, grad_output, scale) functions.
         """
-        if scale is None:
-            scale = 1
         self.update_grad_inputs(inputs, grad_output)
         self.acc_grad_params(inputs, grad_output, scale)
         return self.grad_inputs
