@@ -9,17 +9,6 @@ __all__ = ['FloatTensor', 'DoubleTensor', 'CharTensor', 'ByteTensor',
            'ShortTensor', 'IntTensor', 'LongTensor', 'Tensor']
 
 
-#class BaseTensor(np.ndarray):
-#    def __new__(cls, *args, **kwargs):
-#        return np.ndarray.__new__(cls, *args, **kwargs)
-#
-##    def __array_wrap__(self, out_arr, context=None):
-##        return np.ndarray().__array_wrap__(self, out_arr, context)
-#
-#    def narrow(self, dim, start, stride):
-#        pass
-
-
 class FloatTensor(np.ndarray):
     def __new__(cls, *args, **kwargs):
         kwargs.update(dtype=np.float32)
@@ -62,5 +51,19 @@ class LongTensor(np.ndarray):
         return np.ndarray.__new__(cls, *args, **kwargs)
 
 
-def Tensor(shape, default_tensor=FloatTensor):
-    return default_tensor(shape)
+def empty_like(tensor, dtype=None, order='K'):
+    return np.empty_like(tensor, dtype, order, subok=True)
+
+
+def ones_like(tensor, dtype=None, order='K'):
+    return np.ones_like(tensor, dtype, order, subok=True)
+
+
+def zeros_like(tensor, dtype=None, order='K'):
+    return np.zeros_like(tensor, dtype, order, subok=True)
+
+
+def Tensor(arg, tensor_type=FloatTensor):
+    if isinstance(arg, np.ndarray):
+        return arg.view(tensor_type)
+    return 
